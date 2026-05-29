@@ -1,5 +1,6 @@
 package org.blog.controller;
 
+import org.blog.dtos.PostListDto;
 import org.blog.model.Post;
 import org.blog.service.PostService;
 import org.springframework.web.bind.annotation.*;
@@ -24,12 +25,11 @@ public class PostController {
     }
 
     @GetMapping(value = "")
-    public List<Post> getList(
+    public PostListDto getList(
             @RequestParam(value = "search") String search,
             @RequestParam(value = "pageNumber") int pageNumber,
             @RequestParam(value = "pageSize") int pageSize) {
-        // TODO:
-        return service.getList();
+        return service.getList(search, pageNumber, pageSize);
     }
 
 }

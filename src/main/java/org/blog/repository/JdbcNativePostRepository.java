@@ -25,14 +25,19 @@ public class JdbcNativePostRepository implements PostRepository {
                         "LEFT JOIN comments c ON c.postId = p.id " +
                         "GROUP BY p.id " +
                         "ORDER BY p.id ",
-                (rs, rowNum) -> new Post(
-                        rs.getLong("id"),
-                        rs.getString("title"),
-                        rs.getString("text"),
-                        List.of(rs.getString("tags").split(",")),
-                        rs.getInt("likesCount"),
-                        rs.getInt("commentsCount")
-                ));
+                (rs, rowNum) -> {
+                    String tagsStr = rs.getString("tags");
+                    List<String> tagsList = tagsStr != null ? List.of(tagsStr.split(",")) : List.of();
+
+                    return new Post(
+                            rs.getLong("id"),
+                            rs.getString("title"),
+                            rs.getString("text"),
+                            tagsList,
+                            rs.getInt("likesCount"),
+                            rs.getInt("commentsCount")
+                    );
+                });
     }
 
     @Override
