@@ -56,4 +56,14 @@ public class PostController {
         service.delete(id);
         return ResponseEntity.ok().build();
     }
+
+    @PostMapping("/{id}/likes")
+    public ResponseEntity<Integer> incLikes(@PathVariable(name = "id") long id) {
+        try {
+            int result = service.incLikes(id);
+            return ResponseEntity.ok(result);
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.notFound().build();
+        }
+    }
 }

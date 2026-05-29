@@ -132,6 +132,20 @@ public class PostService {
         postRepository.delete(id);
     }
 
+    public int incLikes(long id) throws IllegalArgumentException {
+        Optional<Post> oppost = postRepository.getById(id);
+
+        if (oppost.isPresent()) {
+            Post post = oppost.get();
+            post.setLikesCount(post.getLikesCount() + 1);
+
+            postRepository.update(id, post);
+
+            return getById(id).get().getLikesCount();
+        } else
+            throw new IllegalArgumentException();
+    }
+
     private PostDto convertToDto(Post post, boolean ellipsis) {
         String truncatedText = post.getText();
         if (ellipsis) {

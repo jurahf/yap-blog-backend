@@ -89,10 +89,11 @@ public class JdbcNativePostRepository implements PostRepository {
     @Override
     public long update(long id, Post post) {
         int rowsAffected =
-                jdbcTemplate.update("update posts set title = ?, text = ?, tags = ? where id = ?",
+                jdbcTemplate.update("update posts set title = ?, text = ?, tags = ?, likesCount = ? where id = ?",
                         post.getTitle(),
                         post.getText(),
                         String.join(",", post.getTags()),
+                        post.getLikesCount(),
                         id);
 
         return id;
