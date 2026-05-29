@@ -128,6 +128,10 @@ public class PostService {
             throw new IllegalArgumentException();
     }
 
+    public void delete(long id) {
+        postRepository.delete(id);
+    }
+
     private PostDto convertToDto(Post post, boolean ellipsis) {
         String truncatedText = post.getText();
         if (ellipsis) {

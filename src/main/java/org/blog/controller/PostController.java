@@ -50,4 +50,10 @@ public class PostController {
             return ResponseEntity.notFound().build();
         }
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<PostDto> delete(@PathVariable(name = "id") long id) {
+        service.delete(id);
+        return ResponseEntity.ok().build();
+    }
 }
