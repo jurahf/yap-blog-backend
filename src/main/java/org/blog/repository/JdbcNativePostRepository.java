@@ -42,7 +42,28 @@ public class JdbcNativePostRepository implements PostRepository {
 
     @Override
     public Optional<Post> getById(long id) {
-        return Optional.empty();
+        List<Post> posts = jdbcTemplate.query(
+                "select p.id, p.title, p.text, p.tags, p.likesCount, COUNT(c.id) AS commentsCount " +
+                        "from posts p " +
+                        "LEFT JOIN comments c ON c.postId = p.id " +
+                        "WHERE p.id = ? " +
+                        "GROUP BY p.id",
+                (rs, rowNum) -> {
+                    String tagsStr = rs.getString("tags");
+                    List<String> tagsList = tagsStr != null ? List.of(tagsStr.split(",")) : List.of();
+                    return new Post(
+                            rs.getLong("id"),
+                            rs.getString("title"),
+                            rs.getString("text"),
+                            tagsList,
+                            rs.getInt("likesCount"),
+                            rs.getInt("commentsCount")
+                    );
+                },
+                id
+        );
+
+        return posts.stream().findFirst();
     }
 
     @Override

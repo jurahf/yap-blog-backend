@@ -6,9 +6,12 @@ import org.blog.model.Post;
 import org.blog.repository.PostRepository;
 import org.springframework.stereotype.Service;
 
+import javax.swing.text.html.Option;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
+
+import static java.util.Optional.empty;
 
 @Service
 public class PostService {
@@ -81,7 +84,7 @@ public class PostService {
 
                     return true;
                 })
-                .map(this::convertToDto)
+                .map(x -> convertToDto(x, true))
                 .toList();
 
         if (pageNumber < 1)
@@ -97,11 +100,18 @@ public class PostService {
         return new PostListDto(limitedPosts, pageNumber > 1, pageNumber < totalPages, totalPages);
     }
 
-    private PostDto convertToDto(Post post) {
-        // Обрезать text до 128 символов и добавлять '...'
+    public Optional<PostDto> getById(long id) {
+        Optional<Post> post = postRepository.getById(id);
+        return post.map(value -> convertToDto(value, false));
+    }
+
+    private PostDto convertToDto(Post post, boolean ellipsis) {
         String truncatedText = post.getText();
-        if (truncatedText != null && truncatedText.length() > 128) {
-            truncatedText = truncatedText.substring(0, 128) + "...";
+        if (ellipsis) {
+            // Обрезать text до 128 символов и добавлять '...'
+            if (truncatedText != null && truncatedText.length() > 128) {
+                truncatedText = truncatedText.substring(0, 128) + "...";
+            }
         }
 
         return new PostDto(

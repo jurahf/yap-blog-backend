@@ -1,12 +1,12 @@
 package org.blog.controller;
 
-import org.blog.dtos.PostListDto;
-import org.blog.model.Post;
+import org.blog.dtos.*;
 import org.blog.service.PostService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Optional;
+
 
 @RestController
 @RequestMapping("/api/posts")
@@ -30,6 +30,12 @@ public class PostController {
             @RequestParam(value = "pageNumber") int pageNumber,
             @RequestParam(value = "pageSize") int pageSize) {
         return service.getList(search, pageNumber, pageSize);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<PostDto> getById(@PathVariable(name = "id") long id) {
+        var result = service.getById(id);
+        return result.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
 }
