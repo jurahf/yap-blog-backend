@@ -1,6 +1,7 @@
 package org.blog.controller;
 
 import org.blog.model.Post;
+import org.blog.service.PostService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -9,6 +10,12 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/posts")
 public class PostController {
+
+    private final PostService service;
+
+    public PostController(PostService service) {
+        this.service = service;
+    }
 
     @GetMapping("/test")
     @ResponseBody
@@ -22,7 +29,7 @@ public class PostController {
             @RequestParam(value = "pageNumber") int pageNumber,
             @RequestParam(value = "pageSize") int pageSize) {
         // TODO:
-        return new ArrayList<Post>();
+        return service.getList();
     }
 
 }

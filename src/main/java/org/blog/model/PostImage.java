@@ -4,7 +4,7 @@ package org.blog.model;
 public class PostImage {
 
     private long postId;
-    private byte[] content;
+    private String path;
 
     public long getPostId() {
         return postId;
@@ -14,11 +14,11 @@ public class PostImage {
         this.postId = postId;
     }
 
-    public byte[] getContent() {
-        return content;
+    public String getPath() {
+        return path;
     }
 
-    public void setContent(byte[] content) {
-        this.content = content;
+    public void setPath(String path) {
+        this.path = path;
     }
 }
