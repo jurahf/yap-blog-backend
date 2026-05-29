@@ -2,17 +2,16 @@ package org.blog.service;
 
 import org.blog.dtos.PostDto;
 import org.blog.dtos.PostListDto;
-import org.blog.dtos.PostRequestDto;
+import org.blog.dtos.PostCreateRequestDto;
+import org.blog.dtos.PostUpdateRequestDto;
 import org.blog.model.Post;
 import org.blog.repository.PostRepository;
+import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Service;
 
-import javax.swing.text.html.Option;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
-import static java.util.Optional.empty;
 
 @Service
 public class PostService {
@@ -106,11 +105,27 @@ public class PostService {
         return post.map(value -> convertToDto(value, false));
     }
 
-    public PostDto create(PostRequestDto request) {
+    public PostDto create(PostCreateRequestDto request) {
         Post post = new Post(0, request.getTitle(), request.getText(), request.getTags(), 0, 0);
         long id = postRepository.create(post);
 
         return getById(id).get();
+    }
+
+    public PostDto update(long id, PostUpdateRequestDto request) throws IllegalArgumentException {
+        Optional<Post> oppost = postRepository.getById(id);
+
+        if (oppost.isPresent()) {
+            Post post = oppost.get();
+            post.setTitle(request.getTitle());
+            post.setText(request.getText());
+            post.setTags(request.getTags());
+
+            postRepository.update(id, post);
+
+            return getById(id).get();
+        } else
+            throw new IllegalArgumentException();
     }
 
     private PostDto convertToDto(Post post, boolean ellipsis) {

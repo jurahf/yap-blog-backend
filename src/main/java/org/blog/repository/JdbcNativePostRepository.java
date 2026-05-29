@@ -1,11 +1,9 @@
 package org.blog.repository;
 
+import org.blog.dtos.PostUpdateRequestDto;
 import org.blog.model.Post;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import java.util.HashMap;
@@ -89,14 +87,20 @@ public class JdbcNativePostRepository implements PostRepository {
     }
 
     @Override
+    public long update(long id, Post post) {
+        int rowsAffected =
+                jdbcTemplate.update("update posts set title = ?, text = ?, tags = ? where id = ?",
+                        post.getTitle(),
+                        post.getText(),
+                        String.join(",", post.getTags()),
+                        id);
+
+        return id;
+    }
+
+    @Override
     public void delete(long id) {
         jdbcTemplate.update("delete from posts where id = ?", id);
     }
 
-    @Override
-    public long update(long id, Post user) {
-//        jdbcTemplate.update("update users set first_name = ?, last_name = ?, age = ?, active = ? where id = ?",
-//                user.getFirstName(), user.getLastName(), user.getAge(), user.isActive(), id);
-        return 0;
-    }
 }

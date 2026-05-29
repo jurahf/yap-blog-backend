@@ -5,8 +5,6 @@ import org.blog.service.PostService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
-
 
 @RestController
 @RequestMapping("/api/posts")
@@ -39,8 +37,17 @@ public class PostController {
     }
 
     @PostMapping
-    public PostDto create(@RequestBody PostRequestDto requestDto) {
+    public PostDto create(@RequestBody PostCreateRequestDto requestDto) {
         return service.create(requestDto);
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<PostDto> update (@PathVariable(name = "id") long id, @RequestBody PostUpdateRequestDto requestDto) {
+        try {
+            var result = service.update(id, requestDto);
+            return ResponseEntity.ok(result);
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.notFound().build();
+        }
+    }
 }

@@ -2,7 +2,7 @@ package org.blog.dtos;
 
 import java.util.List;
 
-public class PostRequestDto {
+public class PostCreateRequestDto {
     private String title;
     private String text;
     private List<String> tags;
