@@ -2,6 +2,7 @@ package org.blog.service;
 
 import org.blog.dtos.PostDto;
 import org.blog.dtos.PostListDto;
+import org.blog.dtos.PostRequestDto;
 import org.blog.model.Post;
 import org.blog.repository.PostRepository;
 import org.springframework.stereotype.Service;
@@ -103,6 +104,13 @@ public class PostService {
     public Optional<PostDto> getById(long id) {
         Optional<Post> post = postRepository.getById(id);
         return post.map(value -> convertToDto(value, false));
+    }
+
+    public PostDto create(PostRequestDto request) {
+        Post post = new Post(0, request.getTitle(), request.getText(), request.getTags(), 0, 0);
+        long id = postRepository.create(post);
+
+        return getById(id).get();
     }
 
     private PostDto convertToDto(Post post, boolean ellipsis) {

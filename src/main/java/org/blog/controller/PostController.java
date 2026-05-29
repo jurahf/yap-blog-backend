@@ -38,4 +38,9 @@ public class PostController {
         return result.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
+    @PostMapping
+    public PostDto create(@RequestBody PostRequestDto requestDto) {
+        return service.create(requestDto);
+    }
+
 }

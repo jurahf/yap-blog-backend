@@ -6,7 +6,7 @@ import java.util.Optional;
 public interface Repository<T> {
     List<T> getList();
     Optional<T> getById(long id);
-    T create(T entity);
-    T update(long id, T entity);
+    long create(T entity);
+    long update(long id, T entity);
     void delete(long id);
 }

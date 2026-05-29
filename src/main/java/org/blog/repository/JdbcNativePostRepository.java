@@ -2,9 +2,15 @@ package org.blog.repository;
 
 import org.blog.model.Post;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementCreator;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Repository
@@ -67,12 +73,19 @@ public class JdbcNativePostRepository implements PostRepository {
     }
 
     @Override
-    public Post create(Post user) {
-//        // Формируем insert-запрос с параметрами
-//        jdbcTemplate.update("insert into users(first_name, last_name, age, active) values(?, ?, ?, ?)",
-//                user.getFirstName(), user.getLastName(), user.getAge(), user.isActive());
+    public long create(Post post) {
+        SimpleJdbcInsert insert = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName("posts")
+                .usingGeneratedKeyColumns("id");
 
-        return null;
+        final Map<String, Object> parameters = new HashMap<>();
+        parameters.put("title", post.getTitle());
+        parameters.put("text", post.getText());
+        parameters.put("tags", String.join(",", post.getTags()));
+        parameters.put("likesCount", 0);
+
+        Number id = insert.executeAndReturnKey(parameters);
+        return id.longValue();
     }
 
     @Override
@@ -81,9 +94,9 @@ public class JdbcNativePostRepository implements PostRepository {
     }
 
     @Override
-    public Post update(long id, Post user) {
+    public long update(long id, Post user) {
 //        jdbcTemplate.update("update users set first_name = ?, last_name = ?, age = ?, active = ? where id = ?",
 //                user.getFirstName(), user.getLastName(), user.getAge(), user.isActive(), id);
-        return null;
+        return 0;
     }
 }
