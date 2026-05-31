@@ -6,6 +6,11 @@ public class PostImage {
     private long postId;
     private String path;
 
+    public PostImage(long postId, String path) {
+        this.postId = postId;
+        this.path = path;
+    }
+
     public long getPostId() {
         return postId;
     }
