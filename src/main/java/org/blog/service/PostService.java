@@ -6,7 +6,6 @@ import org.blog.dtos.PostCreateRequestDto;
 import org.blog.dtos.PostUpdateRequestDto;
 import org.blog.model.Post;
 import org.blog.repository.PostRepository;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;

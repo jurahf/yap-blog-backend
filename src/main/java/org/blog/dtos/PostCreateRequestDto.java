@@ -7,6 +7,16 @@ public class PostCreateRequestDto {
     private String text;
     private List<String> tags;
 
+    public PostCreateRequestDto() {
+
+    }
+
+    public PostCreateRequestDto(String title, String text, List<String> tags) {
+        this.title = title;
+        this.text = text;
+        this.tags = tags;
+    }
+
     public String getTitle() {
         return title;
     }
