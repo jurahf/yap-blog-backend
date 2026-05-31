@@ -26,12 +26,6 @@ public class PostController {
         this.commentsService = commentsService;
     }
 
-    @GetMapping("/test")
-    @ResponseBody
-    public String test() {
-        return "<h1>Hello, world!</h1>";
-    }
-
     @GetMapping(value = "")
     public PostListDto getList(
             @RequestParam(value = "search") String search,

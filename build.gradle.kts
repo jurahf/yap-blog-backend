@@ -26,14 +26,15 @@ dependencies {
 
     testImplementation("org.hamcrest:hamcrest:2.2")
     testImplementation("org.slf4j:slf4j-nop:2.0.12")
-//    testImplementation("org.springframework:spring-jcl:6.2.1")
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.3")
-//    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.9.3")
-//    testImplementation("com.jayway.jsonpath:json-path:2.9.0")
-//    implementation("jakarta.servlet:jakarta.servlet-api:6.1.0")
-//    implementation("com.fasterxml.jackson.core:jackson-databind:2.17.2")
     testImplementation("org.mockito:mockito-junit-jupiter:5.3.1")
     testImplementation("org.assertj:assertj-core:3.24.2")
+
+    testImplementation("org.springframework:spring-jcl:6.2.1")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.9.3")
+    testImplementation("com.jayway.jsonpath:json-path:2.9.0")
+    testImplementation("jakarta.servlet:jakarta.servlet-api:6.1.0")
+    testImplementation("com.fasterxml.jackson.core:jackson-databind:2.17.2")
 }
 
 tasks.test {
