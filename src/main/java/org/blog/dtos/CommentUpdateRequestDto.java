@@ -1,12 +1,14 @@
-package org.blog.model;
+package org.blog.dtos;
 
-/// Комментарий к посту - модель хранения
-public class Comment {
+public class CommentUpdateRequestDto {
     private long id;
     private String text;
     private long postId;
 
-    public Comment(long id, String text, long postId) {
+    public CommentUpdateRequestDto() {
+    }
+
+    public CommentUpdateRequestDto(long id, String text, long postId) {
         this.id = id;
         this.text = text;
         this.postId = postId;

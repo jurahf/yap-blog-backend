@@ -1,13 +1,14 @@
 package org.blog.controller;
 
 import org.blog.dtos.*;
-import org.blog.service.FilesService;
-import org.blog.service.PostService;
+import org.blog.service.*;
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 
 @RestController
@@ -16,11 +17,13 @@ public class PostController {
 
     private final PostService postService;
     private final FilesService filesService;
+    private final CommentsService commentsService;
 
-    public PostController(PostService postService, FilesService filesService) {
+    public PostController(PostService postService, FilesService filesService, CommentsService commentsService) {
 
         this.postService = postService;
         this.filesService = filesService;
+        this.commentsService = commentsService;
     }
 
     @GetMapping("/test")
@@ -95,5 +98,42 @@ public class PostController {
         } catch (IllegalArgumentException ex) {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @GetMapping("/{id}/comments")
+    public List<CommentDto> getComments(@PathVariable("id") long postId) {
+        return commentsService.getByPostId(postId);
+    }
+
+    @GetMapping("/{postId}/comments/{id}")
+    public ResponseEntity<CommentDto> getComments(@PathVariable("postId") long postId, @PathVariable("id") long id) {
+        var result = commentsService.getById(postId, id);
+        return result.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @PostMapping("/{id}/comments")
+    public CommentDto createComments(@PathVariable("id") long postId, @RequestBody CommentCreateRequestDto requestDto) {
+        return commentsService.create(postId, requestDto);
+    }
+
+    @PutMapping("/{postId}/comments/{id}")
+    public ResponseEntity<CommentDto> updateComment(
+            @PathVariable("postId") long postId,
+            @PathVariable("id") long id,
+            @RequestBody CommentUpdateRequestDto requestDto) {
+        try {
+            var result = commentsService.update(postId, id, requestDto);
+            return ResponseEntity.ok(result);
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @DeleteMapping("/{postId}/comments/{id}")
+    public ResponseEntity<?> updateComment(
+            @PathVariable("postId") long postId,
+            @PathVariable("id") long id) {
+        commentsService.delete(postId, id);
+        return ResponseEntity.ok().build();
     }
 }
