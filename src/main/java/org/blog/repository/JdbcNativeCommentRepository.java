@@ -1,7 +1,6 @@
 package org.blog.repository;
 
 import org.blog.model.Comment;
-import org.blog.model.Post;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;

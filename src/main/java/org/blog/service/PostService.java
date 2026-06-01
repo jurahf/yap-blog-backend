@@ -22,7 +22,6 @@ public class PostService {
     }
 
     public PostListDto getList(String search, int pageNumber, int pageSize) {
-        List<Post> allPosts = postRepository.getList();
 
         // Парсинг строки поиска
         String titleSubstring = null;
@@ -53,50 +52,18 @@ public class PostService {
             }
         }
 
-        // Фильтрация постов
-        final String titleSearch = titleSubstring;
-        List<PostDto> filteredPosts = allPosts.stream()
-                .filter(post -> {
-                    // Фильтр по подстроке в названии
-                    if (titleSearch != null && !titleSearch.isEmpty()
-                        && !post.getTitle().toLowerCase().contains(titleSearch.toLowerCase())) {
-                            return false;
-                    }
-
-                    // Фильтр по тегам (по «И» - все обязательные теги должны присутствовать)
-                    if (!requiredTags.isEmpty()) {
-                        List<String> postTags = post.getTags();
-                        if (postTags == null || postTags.isEmpty()) {
-                            return false;
-                        }
-
-                        List<String> postTagsLower = postTags.stream()
-                                .map(String::toLowerCase)
-                                .toList();
-
-                        for (String requiredTag : requiredTags) {
-                            if (!postTagsLower.contains(requiredTag)) {
-                                return false;
-                            }
-                        }
-                    }
-
-                    return true;
-                })
-                .map(x -> convertToDto(x, true))
-                .toList();
-
         if (pageNumber < 1)
             pageNumber = 1;
 
-        List<PostDto> limitedPosts = filteredPosts.stream()
-                .skip((pageNumber - 1) * pageSize)
-                .limit(pageSize)
-                .toList();
+        List<Post> allPosts = postRepository.getList(titleSubstring, requiredTags, (pageNumber - 1) * pageSize, pageSize);
+        int totalCount = postRepository.getCount(titleSubstring, requiredTags);
+        int totalPages = (int) Math.ceil((double) totalCount / pageSize);
 
-        int totalPages = (int) Math.ceil((double) filteredPosts.size() / pageSize);
-
-        return new PostListDto(limitedPosts, pageNumber > 1, pageNumber < totalPages, totalPages);
+        return new PostListDto(
+                allPosts.stream().map(x -> convertToDto(x, true)).toList(),
+                pageNumber > 1,
+                pageNumber < totalPages,
+                totalPages);
     }
 
     public Optional<PostDto> getById(long id) {

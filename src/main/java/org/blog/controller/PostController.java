@@ -8,6 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 
@@ -31,7 +33,7 @@ public class PostController {
             @RequestParam(value = "search") String search,
             @RequestParam(value = "pageNumber") int pageNumber,
             @RequestParam(value = "pageSize") int pageSize) {
-        return postService.getList(search, pageNumber, pageSize);
+        return postService.getList(URLDecoder.decode(search, StandardCharsets.UTF_8), pageNumber, pageSize);    // декодируем чтобы обработать символ #
     }
 
     @GetMapping("/{id}")

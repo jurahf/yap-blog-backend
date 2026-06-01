@@ -41,54 +41,12 @@ public class PostServiceTests {
     }
 
     @Test
-    @DisplayName("getList - проверка пагинации, первая страница")
-    void getList_WithoutSearch_ShouldReturnPaginatedPosts() {
-        List<Post> allPosts = List.of(samplePost1, samplePost2);
-        when(postRepository.getList()).thenReturn(allPosts);
-
-        PostListDto result = postService.getList(null, 1, 1);
-
-        assertThat(result.getPosts()).hasSize(1);
-        assertThat(result.isHasPrev()).isFalse();
-        assertThat(result.isHasNext()).isTrue();
-        assertThat(result.getLastPage()).isEqualTo(2);
-        verify(postRepository, times(1)).getList();
-    }
-
-    @Test
-    @DisplayName("getList - проверка поиска по подстроке")
-    void getList_WithTitleSearch_ShouldFilterByTitle() {
-        List<Post> allPosts = List.of(samplePost1, samplePost2);
-        when(postRepository.getList()).thenReturn(allPosts);
-
-        PostListDto result = postService.getList("Пост", 1, 10);
-
-        assertThat(result.getPosts()).hasSize(2);
-        assertThat(result.getPosts().get(0).getTitle()).isEqualTo("Пост 1");
-        assertThat(result.getPosts().get(1).getTitle()).isEqualTo("Пост 2");
-    }
-
-    @Test
-    @DisplayName("getList - поиск по тегам")
-    void getList_WithTagSearch_ShouldFilterByAllTags() {
-        Post postWithBothTags = new Post(3, "Java Spring", "Content",
-                List.of("java", "spring", "database"), 0, 0);
-        List<Post> allPosts = List.of(samplePost1, samplePost2, postWithBothTags);
-        when(postRepository.getList()).thenReturn(allPosts);
-
-        PostListDto result = postService.getList("#java #spring", 1, 10);
-
-        assertThat(result.getPosts()).hasSize(1);
-        assertThat(result.getPosts().get(0).getTitle()).isEqualTo("Java Spring");
-    }
-
-    @Test
     @DisplayName("getList - делается эллипсис на 128 символов")
     void getList_ShouldTruncateLongText() {
         // given
         String longText = "a".repeat(200);
         Post postWithLongText = new Post(3, "Long Post", longText, List.of(), 0, 0);
-        when(postRepository.getList()).thenReturn(List.of(postWithLongText));
+        when(postRepository.getList(null, List.of(), 0, 10)).thenReturn(List.of(postWithLongText));
 
         // when
         PostListDto result = postService.getList(null, 1, 10);
@@ -103,13 +61,13 @@ public class PostServiceTests {
     void getList_WithInvalidPageNumber_ShouldSetToFirstPage() {
         // given
         List<Post> allPosts = List.of(samplePost1, samplePost2);
-        when(postRepository.getList()).thenReturn(allPosts);
+        when(postRepository.getList(null, List.of(), 0, 1)).thenReturn(allPosts);
 
         // when
         PostListDto result = postService.getList(null, 0, 1);
 
         // then
-        assertThat(result.getPosts()).hasSize(1);
+        assertThat(result.getPosts()).hasSize(2);
         assertThat(result.isHasPrev()).isFalse();
     }
 

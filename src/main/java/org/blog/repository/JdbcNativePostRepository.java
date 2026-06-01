@@ -1,15 +1,10 @@
 package org.blog.repository;
 
-import org.blog.dtos.PostUpdateRequestDto;
 import org.blog.model.Post;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Repository
 public class JdbcNativePostRepository implements PostRepository {
@@ -21,17 +16,20 @@ public class JdbcNativePostRepository implements PostRepository {
     }
 
     @Override
-    public List<Post> getList() {
+    public List<Post> getList(String titleSubstring, List<String> requiredTags, int offset, int limit) {
         // Выполняем запрос с помощью JdbcTemplate
         // Преобразовываем ответ с помощью RowMapper
+        List<Object> params = new ArrayList<>();
+        String where = getWhereClauseSql(titleSubstring, requiredTags, Optional.of(offset), Optional.of(limit), true, params);
+
         return jdbcTemplate.query(
                 "select p.id, p.title, p.text, COALESCE(p.tags, '') as tags, p.likesCount, COUNT(c.id) AS commentsCount from posts p " +
-                        "LEFT JOIN comments c ON c.postId = p.id " +
-                        "GROUP BY p.id " +
-                        "ORDER BY p.id ",
+                        "LEFT JOIN comments c ON c.postId = p.id " + where,
                 (rs, rowNum) -> {
                     String tagsStr = rs.getString("tags");
-                    List<String> tagsList = tagsStr != null ? List.of(tagsStr.split(",")) : List.of();
+                    List<String> tagsList = tagsStr != null && !tagsStr.isEmpty()
+                            ? List.of(tagsStr.split(","))
+                            : List.of();
 
                     return new Post(
                             rs.getLong("id"),
@@ -41,7 +39,66 @@ public class JdbcNativePostRepository implements PostRepository {
                             rs.getInt("likesCount"),
                             rs.getInt("commentsCount")
                     );
-                });
+                },
+                params.toArray()
+        );
+    }
+
+    @Override
+    public int getCount(String titleSubstring, List<String> requiredTags) {
+        List<Object> params = new ArrayList<>();
+        String where = getWhereClauseSql(titleSubstring, requiredTags, Optional.empty(), Optional.empty(), false, params);
+
+        return jdbcTemplate.queryForObject(
+                "select count(distinct p.id) from posts p " + where,
+                params.toArray(),
+                Integer.class
+        );
+    }
+
+    private String getWhereClauseSql(
+            String titleSubstring,
+            List<String> requiredTags,
+            Optional<Integer> offset,
+            Optional<Integer> limit,
+            boolean oredering,
+            List<Object> params) {
+        StringBuilder sql = new StringBuilder();
+
+        List<String> conditions = new ArrayList<>();
+
+        // Фильтрация по title
+        if (titleSubstring != null && !titleSubstring.trim().isEmpty()) {
+            conditions.add("LOWER(p.title) LIKE LOWER ( ? )");
+            params.add("%" + titleSubstring + "%");
+        }
+
+        // Фильтрация по тегам
+        if (requiredTags != null && !requiredTags.isEmpty()) {
+            for (String tag : requiredTags) {
+                // Проверяем, что тег содержится в строке tags
+                conditions.add("LOWER(CONCAT(',', COALESCE(p.tags, ''), ',')) LIKE LOWER( ? )");
+                params.add("%," + tag + ",%");
+            }
+        }
+
+        if (!conditions.isEmpty()) {
+            sql.append(" WHERE ");
+            sql.append(String.join(" AND ", conditions));
+        }
+
+        if (oredering) {
+            sql.append(" GROUP BY p.id ORDER BY p.id ");
+        }
+
+        // пагинация
+        if (limit.isPresent() && offset.isPresent()) {
+            sql.append(" LIMIT ? OFFSET ?");
+            params.add(limit.get());
+            params.add(offset.get());
+        }
+
+        return sql.toString();
     }
 
     @Override

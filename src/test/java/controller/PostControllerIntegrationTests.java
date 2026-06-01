@@ -3,8 +3,11 @@ package controller;
 
 import org.blog.WebConfiguration;
 import org.blog.configuration.DataSourceConfiguration;
+import org.blog.dtos.PostListDto;
+import org.blog.model.Post;
 import org.blog.service.PostService;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -16,8 +19,13 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.stringContainsInOrder;
+import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -58,6 +66,7 @@ public class PostControllerIntegrationTests {
 
 
     @Test
+    @DisplayName("getList - пагинация")
     void getPostsPagination() throws Exception {
         mockMvc.perform(get("/api/posts?search=пост&pageNumber=1&pageSize=2"))
                 .andExpect(status().isOk())
@@ -67,6 +76,24 @@ public class PostControllerIntegrationTests {
                 .andExpect(jsonPath("$.posts[1].title").value("Пост 2"));
     }
 
+    @Test
+    @DisplayName("getList - поиск по тегам")
+    void getList_WithTagSearch_ShouldNoTags() throws Exception {
+        mockMvc.perform(get("/api/posts?search=%23it %23lol&pageNumber=1&pageSize=10"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.posts", hasSize(0)));
+    }
+
+    @Test
+    @DisplayName("getList - поиск по тегам")
+    void getList_WithTagSearch_ShouldFilterByTags() throws Exception {
+        mockMvc.perform(get("/api/posts?search=%23it %23web&pageNumber=1&pageSize=10"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.posts", hasSize(1)))
+                .andExpect(jsonPath("$.posts[0].title").value("Пост 1"));
+    }
 
     @Test
     void getPostsAll() throws Exception {
