@@ -1,19 +1,13 @@
 package org.blog.service;
 
-import org.blog.dtos.PostCreateRequestDto;
-import org.blog.dtos.PostDto;
-import org.blog.dtos.PostListDto;
-import org.blog.dtos.PostUpdateRequestDto;
+import org.blog.dtos.*;
 import org.blog.model.Post;
 import org.blog.repository.PostRepository;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 import java.util.Optional;
@@ -25,13 +19,13 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
 
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 public class PostServiceTests {
 
-    @MockitoBean
+    @Mock
     private PostRepository postRepository;
 
-    @Autowired
+    @InjectMocks
     private PostService postService;
 
     private Post samplePost1;
