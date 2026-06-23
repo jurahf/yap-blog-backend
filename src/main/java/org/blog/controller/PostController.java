@@ -12,7 +12,6 @@ import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-
 @RestController
 @RequestMapping("/api/posts")
 public class PostController {

@@ -1,7 +1,6 @@
 package org.blog.repository;
 
 import org.blog.model.Comment;
-import org.blog.model.Post;
 
 import java.util.List;
 import java.util.Optional;

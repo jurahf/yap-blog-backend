@@ -4,7 +4,6 @@ import org.blog.dtos.CommentCreateRequestDto;
 import org.blog.dtos.CommentDto;
 import org.blog.dtos.CommentUpdateRequestDto;
 import org.blog.model.Comment;
-import org.blog.model.Post;
 import org.blog.repository.CommentRepository;
 import org.springframework.stereotype.Service;
 

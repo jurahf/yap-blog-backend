@@ -1,58 +1,33 @@
-package controller;
+package org.blog.controller;
 
-
-import org.blog.WebConfiguration;
-import org.blog.configuration.DataSourceConfiguration;
-import org.blog.dtos.PostListDto;
-import org.blog.model.Post;
-import org.blog.service.PostService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
 
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.stringContainsInOrder;
-import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
-@SpringJUnitConfig(classes = {
-        DataSourceConfiguration.class,
-        WebConfiguration.class,
-})
-@WebAppConfiguration
+@SpringBootTest
+@AutoConfigureMockMvc
 @TestPropertySource(locations = "classpath:test-application.properties")
 public class PostControllerIntegrationTests {
-
-    @Autowired
-    private WebApplicationContext wac;
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
     @Autowired
-    private PostService service;
-
     private MockMvc mockMvc;
 
     @BeforeEach
     void setup() {
-        mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
-
         // Чистим и наполняем БД перед каждым тестом
         jdbcTemplate.execute("DELETE FROM POSTS;");
         jdbcTemplate.execute("insert into posts(id, title, text, tags, likesCount) values (1, 'Пост 1', 'Первый пост про localhost', 'it,web', 2);");
